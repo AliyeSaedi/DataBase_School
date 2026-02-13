@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <string.h>  // برای توابع رشته‌ای
+#include <string.h>
 
 #define MAX_DATA_LENGTH 50
 #define MAX_STUDENTS 100
@@ -9,9 +9,9 @@
 char students_names[MAX_STUDENTS][MAX_DATA_LENGTH];
 int student_lessons[MAX_STUDENTS][MAX_LESSONS];
 int number_of_students = 0;
-int number_of_lessons = 0;  // تعداد دروس (ثابت برای همه دانش‌آموزان)
+int number_of_lessons = 0;
 
-// اعلان توابع
+
 void MainMenu();
 void Insert_Student_Data_Menu();
 void Insert_Student_Name();
@@ -158,21 +158,12 @@ void Show_Student_Data() {
                 printf("%d ", student_lessons[i][j]);
             }
             printf("\n");
-            
-            // محاسبه و نمایش معدل
-            int sum = 0;
-            for(j = 0; j < number_of_lessons; j++) {
-                sum += student_lessons[i][j];
-            }
-            float average = (float)sum / number_of_lessons;
-            printf("Miangin: %.2f\n", average);
-        } else {
-            printf("No courses added yet!\n");
-        }
-    }
+		}
+		
     printf("\n=====================================\n");
     printf("Total students: %d\n", number_of_students);
     printf("Total lessons: %d\n", number_of_lessons);
+	}
 }
 
 void Exit_Key() {
