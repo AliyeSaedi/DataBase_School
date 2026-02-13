@@ -3,22 +3,21 @@
 #define MAX_DATA_LENGTH 50
 #define MAX_COURS_LENGTH 50
 
-void MenuKeys();
-void Insert_Key();
+void MainMenu();
+void Insert_Student_Data_Menu();
+void Insert_Student_Name();
+void Show_Student_Data();
 void Exit_Key();
-void Show_Key();
-void Student();
-void Insert_Data_Student();
 
 int main(){
-	MenuKeys();
+	printf("\n welcome to School DataBase \n");
+	MainMenu();
 	return 0;
 }
 
-void MenuKeys(){
+void MainMenu(){
 	int key;
-	printf("\n\tWELCOME TO SCHOOL DATABASE");
-	
+	printf("\n Main Menu \n");
 	while(1){
 		//دکمه های برنامه
 		printf("\n\tINSERT[1] \t SHOW[2]\n");
@@ -27,18 +26,18 @@ void MenuKeys(){
 		
 		//دکمه ورود اطلاعات دانش آموزان و نمرات
 		if(key == 1){
-			Insert_Key();
+			Insert_Student_Data_Menu();
 		}
 		
 		// دکمه نمایش اطلاعات وارد شده
 		else if(key == 2){
-			Show_Key();
+			Show_Student_Data();
 		}
 	}
 }
 
-void Insert_Key(){
-	printf("\n\tINSERT STUDENT DATA\n");		
+void Insert_Student_Data_Menu(){
+	printf("\n\tINSERT STUDENT DATA MENU\n");		
 	printf("\n\t Insert Student Name[1] \t Insert Student Course[2] \t EXIT[3] \n");
 	printf("\ntype your key: ");
 	
@@ -46,27 +45,17 @@ void Insert_Key(){
 	scanf("%d",&key);
 	
 	if(key == 1){
-		Student();
+		Insert_Student_Name();
 	}
 	else if(key == 2){
-		Insert_Data_Student();
+		
 	}
 	else if(key == 3){
 		Exit_Key();
 	}
 }
 
-void Exit_Key(){
-	printf("\n\tEXITED\n");
-	MenuKeys();
-}
-
-void Show_Key(){
-	printf("\n\tSHOW STUDENT DATA\n");
-}
-
-
-void Student(){
+void Insert_Student_Name(){
 	int daneshamoz_counter, i;
 	int daneshamoz_name [daneshamoz_counter][MAX_DATA_LENGTH];
 	
@@ -80,15 +69,12 @@ void Student(){
 	}
 }
 
-void Insert_Data_Student(){
-	int dars_counter, nomre, j;
-	int daneshamoz_dars[dars_counter][MAX_COURS_LENGTH];
-	
-	printf("tedad dars har danesh amoz ra vared konid: ");
-	scanf("%d",&dars_counter);
-	
-	for(j = 0; j < dars_counter; j++){
-		printf("nomre daneshamoz X baraye darse %d ra vared konid: ", j + 1);
-		scanf("%d",&daneshamoz_dars[j]);
-	}
+void Show_Student_Data(){
+	printf("\n\tSHOW STUDENT DATA\n");
+}
+
+void Exit_Key(){
+	printf("\n\tEXITED\n");
+	printf("=====================================");
+	MainMenu();
 }
