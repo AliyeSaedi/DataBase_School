@@ -5,170 +5,297 @@
 #define MAX_STUDENTS 100
 #define MAX_LESSONS 20
 
-// متغیرهای سراسری برای ذخیره اطلاعات
+
 char students_names[MAX_STUDENTS][MAX_DATA_LENGTH];
 int student_lessons[MAX_STUDENTS][MAX_LESSONS];
+
 int number_of_students = 0;
 int number_of_lessons = 0;
 
 
+/* Prototypes */
 void MainMenu();
-void Insert_Student_Data_Menu();
-void Insert_Student_Name();
-void Insert_Student_Course();
-void Show_Student_Data();
-void Exit_Key();
+
+void InsertStudent();
+void InsertCourses();
+
+void ShowData();
+
+void EditStudent();
+void DeleteStudent();
+
+void ClearInput();
+void ExitProgram();
+
 
 int main() {
-    printf("\n=====================================");
-    printf("\n  Welcome to School DataBase");
-    printf("\n=====================================\n");
+
+    printf("\n==============================");
+    printf("\n   School Database System");
+    printf("\n==============================\n");
+
     MainMenu();
+
     return 0;
 }
 
+
+/* پاک کردن بافر ورودی */
+void ClearInput() {
+    while (getchar() != '\n');
+}
+
+
+/* منوی اصلی */
 void MainMenu() {
+
     int key;
-    
-    while(1) {
-        printf("\n=============== MAIN MENU ===============\n");
-        printf("\n\tINSERT[1] \t SHOW[2] \t EXIT[3]\n");
-        printf("\nType your key: ");
+
+    while (1) {
+
+        printf("\n=========== MAIN MENU ===========\n");
+        printf("1. Insert Student\n");
+        printf("2. Insert Courses\n");
+        printf("3. Show Data\n");
+        printf("4. Edit Student\n");
+        printf("5. Delete Student\n");
+        printf("6. Exit\n");
+        printf("Select: ");
+
         scanf("%d", &key);
-        
-        if(key == 1) {
-            Insert_Student_Data_Menu();
-        }
-        else if(key == 2) {
-            Show_Student_Data();
-        }
-        else if(key == 3) {
-            Exit_Key();
-            break;  // خروج از حلقه while
-        }
-        else {
-            printf("\nInvalid key! Please try again.\n");
+        ClearInput();
+
+        switch (key) {
+
+            case 1:
+                InsertStudent();
+                break;
+
+            case 2:
+                InsertCourses();
+                break;
+
+            case 3:
+                ShowData();
+                break;
+
+            case 4:
+                EditStudent();
+                break;
+
+            case 5:
+                DeleteStudent();
+                break;
+
+            case 6:
+                ExitProgram();
+                return;
+
+            default:
+                printf("Invalid option!\n");
         }
     }
 }
 
-void Insert_Student_Data_Menu() {
-    int key;
-    
-    while(1) {
-        printf("\n========= INSERT STUDENT DATA MENU =========\n");
-        printf("\n\tInsert Student Name[1]");
-        printf("\n\tInsert Student Course[2]");
-        printf("\n\tReturn to Main Menu[3]");
-        printf("\n\nType your key: ");
-        scanf("%d", &key);
-        
-        if(key == 1) {
-            Insert_Student_Name();
-        }
-        else if(key == 2) {
-            Insert_Student_Course();
-        }
-        else if(key == 3) {
-            return;  // بازگشت به منوی اصلی
-        }
-        else {
-            printf("\nInvalid key! Please try again.\n");
-        }
-    }
-}
 
-void Insert_Student_Name() {
-    int i, temp_count;
-    
-    printf("\n=== Insert Student Names ===\n");
-    printf("Tedad danesh amoozan ra vared konid: ");
-    scanf("%d", &temp_count);
-    
-    // بررسی محدودیت حداکثر دانش‌آموزان
-    if(temp_count + number_of_students > MAX_STUDENTS) {
-        printf("\nError! Maximum students is %d\n", MAX_STUDENTS);
+/* افزودن دانش آموز */
+void InsertStudent() {
+
+    int count;
+
+    printf("\nHow many students? ");
+    scanf("%d", &count);
+    ClearInput();
+
+    if (number_of_students + count > MAX_STUDENTS) {
+        printf("Max limit reached!\n");
         return;
     }
-    
-    // دریافت نام دانش‌آموزان جدید
-    for(i = 0; i < temp_count; i++) {
-        printf("Name danesh amooz %d ra vared konid: ", number_of_students + i + 1);
-        scanf("%s", students_names[number_of_students + i]);
+
+    for (int i = 0; i < count; i++) {
+
+        printf("Enter name for student %d: ",
+               number_of_students + 1);
+
+        fgets(students_names[number_of_students],
+              MAX_DATA_LENGTH,
+              stdin);
+
+        students_names[number_of_students]
+        [strcspn(students_names[number_of_students], "\n")] = '\0';
+
+        number_of_students++;
     }
-    
-    number_of_students += temp_count;
-    printf("\n%d student(s) added successfully!\n", temp_count);
+
+    printf("Students added successfully!\n");
 }
 
-void Insert_Student_Course() {
-    int i, j, temp_lessons;
-    
-    if(number_of_students == 0) {
-        printf("\nError! Please insert student names first.\n");
+
+/* افزودن نمرات */
+void InsertCourses() {
+
+    if (number_of_students == 0) {
+        printf("No students yet!\n");
         return;
     }
-    
-    printf("\n=== Insert Student Courses ===\n");
-    
-    // اگر اولین بار است که درس وارد می‌شود، تعداد دروس را بگیر
-    if(number_of_lessons == 0) {
-        printf("Tedad doroos ra vared konid: ");
-        scanf("%d", &temp_lessons);
-        
-        // بررسی محدودیت حداکثر دروس
-        if(temp_lessons > MAX_LESSONS) {
-            printf("\nError! Maximum lessons is %d\n", MAX_LESSONS);
+
+    if (number_of_lessons == 0) {
+
+        printf("How many lessons? ");
+        scanf("%d", &number_of_lessons);
+
+        if (number_of_lessons > MAX_LESSONS) {
+            number_of_lessons = 0;
+            printf("Too many lessons!\n");
             return;
         }
-        number_of_lessons = temp_lessons;
     }
-    
-    printf("\nNomre %d dars ra baraye har danesh amooz vared konid:\n", number_of_lessons);
-    
-    // دریافت نمرات همه دانش‌آموزان
-    for(i = 0; i < number_of_students; i++) {
-        printf("\nDanesh amooz %d (%s):\n", i + 1, students_names[i]);
-        for(j = 0; j < number_of_lessons; j++) {
-            printf("  Nomre dars %d: ", j + 1);
+
+    for (int i = 0; i < number_of_students; i++) {
+
+        printf("\nStudent: %s\n",
+               students_names[i]);
+
+        for (int j = 0; j < number_of_lessons; j++) {
+
+            printf("Lesson %d: ", j + 1);
             scanf("%d", &student_lessons[i][j]);
         }
     }
-    
-    printf("\nAll courses added successfully!\n");
+
+    ClearInput();
+    printf("Courses saved!\n");
 }
 
-void Show_Student_Data() {
-    int i, j;
-    
-    printf("\n=========== STUDENTS DATA ===========\n");
-    
-    if(number_of_students == 0) {
-        printf("\nNo students registered yet!\n");
+
+/* نمایش اطلاعات */
+void ShowData() {
+
+    if (number_of_students == 0) {
+        printf("No data available!\n");
         return;
     }
-    
-    for(i = 0; i < number_of_students; i++) {
-        printf("\n-------------------------------------\n");
-        printf("Danesh amooz %d: %s\n", i + 1, students_names[i]);
-        
-        if(number_of_lessons > 0) {
-            printf("Nomreha: ");
-            for(j = 0; j < number_of_lessons; j++) {
+
+    printf("\n=========== STUDENTS DATA ===========\n");
+
+    for (int i = 0; i < number_of_students; i++) {
+
+        printf("\n%d. %s\n", i + 1,
+               students_names[i]);
+
+        if (number_of_lessons > 0) {
+
+            printf("Grades: ");
+
+            for (int j = 0; j < number_of_lessons; j++) {
                 printf("%d ", student_lessons[i][j]);
             }
+
             printf("\n");
-		}
-		
-    printf("\n=====================================\n");
-    printf("Total students: %d\n", number_of_students);
-    printf("Total lessons: %d\n", number_of_lessons);
-	}
+        }
+    }
 }
 
-void Exit_Key() {
-    printf("\n=====================================");
-    printf("\n  Thank you for using School DataBase");
-    printf("\n  Goodbye!");
-    printf("\n=====================================\n");
+
+/* ویرایش دانش آموز */
+void EditStudent() {
+
+    int index;
+
+    if (number_of_students == 0) {
+        printf("No students to edit!\n");
+        return;
+    }
+
+    ShowData();
+
+    printf("\nSelect student number: ");
+    scanf("%d", &index);
+    ClearInput();
+
+    index--;
+
+    if (index < 0 || index >= number_of_students) {
+        printf("Invalid student!\n");
+        return;
+    }
+
+
+    /* تغییر نام */
+    printf("New name: ");
+    fgets(students_names[index],
+          MAX_DATA_LENGTH,
+          stdin);
+
+    students_names[index]
+    [strcspn(students_names[index], "\n")] = '\0';
+
+
+    /* تغییر نمرات */
+    if (number_of_lessons > 0) {
+
+        printf("Enter new grades:\n");
+
+        for (int j = 0; j < number_of_lessons; j++) {
+
+            printf("Lesson %d: ", j + 1);
+            scanf("%d", &student_lessons[index][j]);
+        }
+
+        ClearInput();
+    }
+
+    printf("Student updated!\n");
+}
+
+
+/* حذف دانش آموز */
+void DeleteStudent() {
+
+    int index;
+
+    if (number_of_students == 0) {
+        printf("No students to delete!\n");
+        return;
+    }
+
+    ShowData();
+
+    printf("\nSelect student number to delete: ");
+    scanf("%d", &index);
+    ClearInput();
+
+    index--;
+
+    if (index < 0 || index >= number_of_students) {
+        printf("Invalid student!\n");
+        return;
+    }
+
+
+    /* شیفت دادن آرایه */
+    for (int i = index; i < number_of_students - 1; i++) {
+
+        strcpy(students_names[i],
+               students_names[i + 1]);
+
+        for (int j = 0; j < number_of_lessons; j++) {
+
+            student_lessons[i][j] =
+            student_lessons[i + 1][j];
+        }
+    }
+
+    number_of_students--;
+
+    printf("Student deleted!\n");
+}
+
+
+/* خروج */
+void ExitProgram() {
+
+    printf("\n==============================");
+    printf("\n   Program Closed");
+    printf("\n==============================\n");
 }
