@@ -323,3 +323,7 @@ void ExitProgram() {
     printf("\n   Program Closed");
     printf("\n==============================\n");
 }
+
+void SaveData(){
+	
+}
