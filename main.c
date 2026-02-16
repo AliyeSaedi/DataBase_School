@@ -324,6 +324,8 @@ void ExitProgram() {
     printf("\n==============================\n");
 }
 
-void SaveData(){
-	
+void SaveData(){ //تابع نمایش اطلاعات دریافتی از کاربر در فایل
+	fptr_fwrite = fopen("Database.txt","a");
+	fprintf(fptr_fwrite,"Number of students: %d\n",count);
+	fclose(fptr_fwrite);
 }
