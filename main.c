@@ -12,8 +12,7 @@ int student_lessons[MAX_STUDENTS][MAX_LESSONS];
 int number_of_students = 0;
 int number_of_lessons = 0;
 
-
-/* Prototypes */
+//functions
 void MainMenu();
 
 void InsertStudent();
@@ -26,6 +25,10 @@ void DeleteStudent();
 
 void ClearInput();
 void ExitProgram();
+
+//manage file
+FILE *fptr;
+
 
 
 int main() {
@@ -105,6 +108,10 @@ void InsertStudent() {
 
     printf("\nHow many students? ");
     scanf("%d", &count);
+	// ثبت تعداد دانش آموزان در فایل
+	fptr = fopen("Database.txt","w");
+	
+	
     ClearInput();
 
     if (number_of_students + count > MAX_STUDENTS) {
