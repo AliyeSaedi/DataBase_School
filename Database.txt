@@ -1,0 +1,11 @@
+		W E L C O M E
+-------------------------------------
+	DataBase School
+
+Number of students: 5
+
+Student 0 : Ali 		 12, 43, 123, 
+Student 1 : Mahdi 		 55, 324, 667, 
+Student 2 : Nima 		 43, 22, 4, 
+Student 3 : Majid 		 56, 4, 3, 
+Student 4 : Sima 		 45, 654, 34, 
