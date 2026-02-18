@@ -21,8 +21,8 @@ void EditStudent();
 void DeleteStudent();
 void ClearInput();
 void ExitProgram();
-void SaveData(); // ذخیره اطلاعات در فایل
-void LoadData(); // بارگذاری اطلاعات از فایل
+void SaveData();
+void LoadData();
 
 //manage file
 FILE *fptr;
@@ -32,7 +32,7 @@ int main() {
     printf("\n   School Database System");
     printf("\n==============================\n");
     
-    // بارگذاری اطلاعات از فایل در شروع برنامه
+    // Load data from file at program start
     LoadData();
     
     MainMenu();
@@ -40,16 +40,16 @@ int main() {
     return 0;
 }
 
-/* پاک کردن بافر ورودی */
+/* Clear input buffer */
 void ClearInput() {
     while (getchar() != '\n');
 }
 
-/* ذخیره اطلاعات در فایل */
+/* Save data to file */
 void SaveData() {
     fptr = fopen("Database.txt", "w");
     if (fptr == NULL) {
-        printf("خطا در باز کردن فایل!\n");
+        printf("Error opening file!\n");
         return;
     }
     
@@ -69,59 +69,67 @@ void SaveData() {
     }
     
     fclose(fptr);
-    printf("اطلاعات با موفقیت ذخیره شد!\n");
+    printf("Data saved successfully!\n");
 }
 
-/* بارگذاری اطلاعات از فایل */
+/* Load data from file */
 void LoadData() {
     fptr = fopen("Database.txt", "r");
     if (fptr == NULL) {
-        printf("فایلی برای بارگذاری یافت نشد. یک فایل جدید ایجاد می‌شود.\n");
+        printf("No file found for loading. A new file will be created.\n");
         return;
     }
     
-    // خواندن تعداد دانش‌آموزان و دروس
+    // Read number of students and lessons
     if (fscanf(fptr, "%d", &number_of_students) != 1) {
-        printf("خطا در خواندن فایل!\n");
+        printf("Error reading file!\n");
         fclose(fptr);
         return;
     }
     
     if (fscanf(fptr, "%d", &number_of_lessons) != 1) {
-        printf("خطا در خواندن فایل!\n");
+        printf("Error reading file!\n");
         fclose(fptr);
         return;
     }
     
-    // پاک کردن بافر بعد از fscanf
-    fgetc(fptr);
-    
-    // خواندن اطلاعات هر دانش‌آموز
+    // Read information for each student
     for (int i = 0; i < number_of_students; i++) {
-        // خواندن نام
+        // Read newline after numbers
+        fgetc(fptr);
+        
+        // Read name
         if (fgets(students_names[i], MAX_DATA_LENGTH, fptr) == NULL) {
-            printf("خطا در خواندن نام دانش‌آموز %d\n", i + 1);
+            printf("Error reading name for student %d\n", i + 1);
             break;
         }
-        // حذف newline از انتهای نام
+        // Remove newline from end of name
         students_names[i][strcspn(students_names[i], "\n")] = '\0';
         
-        // خواندن نمرات
+        // Read grades
         for (int j = 0; j < number_of_lessons; j++) {
             if (fscanf(fptr, "%d", &student_lessons[i][j]) != 1) {
-                printf("خطا در خواندن نمره %d برای دانش‌آموز %d\n", j + 1, i + 1);
+                printf("Error reading grade %d for student %d\n", j + 1, i + 1);
                 break;
             }
         }
     }
     
     fclose(fptr);
-    printf("اطلاعات با موفقیت از فایل بارگذاری شد!\n");
-    printf("تعداد دانش‌آموزان: %d\n", number_of_students);
-    printf("تعداد دروس: %d\n", number_of_lessons);
+    printf("Data loaded successfully from file!\n");
+    printf("Number of students: %d\n", number_of_students);
+    printf("Number of lessons: %d\n", number_of_lessons);
+    
+    // Display loaded information
+    if (number_of_students > 0) {
+        printf("\nLoaded students:\n");
+        for (int i = 0; i < number_of_students; i++) {
+            printf("%d. %s\n", i + 1, students_names[i]);
+        }
+    }
 }
 
-/* منوی اصلی */
+/* Main menu */
 void MainMenu() {
     int key;
     
@@ -165,7 +173,7 @@ void MainMenu() {
                 break;
                 
             case 7:
-                // ذخیره خودکار قبل از خروج
+                // Auto save before exit
                 SaveData();
                 ExitProgram();
                 return;
@@ -176,7 +184,7 @@ void MainMenu() {
     }
 }
 
-/* افزودن دانش آموز */
+/* Add student */
 void InsertStudent() {
     int count;
     
@@ -199,7 +207,7 @@ void InsertStudent() {
     printf("Students added successfully!\n");
 }
 
-/* افزودن نمرات */
+/* Add courses/grades */
 void InsertCourses() {
     if (number_of_students == 0) {
         printf("No students yet!\n");
@@ -231,7 +239,7 @@ void InsertCourses() {
     printf("Courses saved!\n");
 }
 
-/* نمایش اطلاعات */
+/* Show data */
 void ShowData() {
     if (number_of_students == 0) {
         printf("No data available!\n");
@@ -248,7 +256,6 @@ void ShowData() {
         if (number_of_lessons > 0) {
             printf("   Grades: ");
             
-            // محاسبه میانگین
             float sum = 0;
             for (int j = 0; j < number_of_lessons; j++) {
                 printf("%d ", student_lessons[i][j]);
@@ -263,7 +270,7 @@ void ShowData() {
     }
 }
 
-/* ویرایش دانش آموز */
+/* Edit student */
 void EditStudent() {
     int index;
     
@@ -285,12 +292,12 @@ void EditStudent() {
         return;
     }
     
-    /* تغییر نام */
+    /* Change name */
     printf("New name: ");
     fgets(students_names[index], MAX_DATA_LENGTH, stdin);
     students_names[index][strcspn(students_names[index], "\n")] = '\0';
     
-    /* تغییر نمرات */
+    /* Change grades */
     if (number_of_lessons > 0) {
         printf("Enter new grades:\n");
         
@@ -305,7 +312,7 @@ void EditStudent() {
     printf("Student updated!\n");
 }
 
-/* حذف دانش آموز */
+/* Delete student */
 void DeleteStudent() {
     int index;
     
@@ -327,7 +334,7 @@ void DeleteStudent() {
         return;
     }
     
-    /* شیفت دادن آرایه */
+    /* Shift array */
     for (int i = index; i < number_of_students - 1; i++) {
         strcpy(students_names[i], students_names[i + 1]);
         
@@ -341,7 +348,7 @@ void DeleteStudent() {
     printf("Student deleted!\n");
 }
 
-/* خروج */
+/* Exit */
 void ExitProgram() {
     printf("\n==============================");
     printf("\n   Program Closed");
