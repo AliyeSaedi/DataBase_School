@@ -26,8 +26,12 @@ void DeleteStudent();
 void ClearInput();
 void ExitProgram();
 
+void LoadData();
+
 //manage file
 FILE *fptr_fwrite;
+int f_count_lesson, f_count_student;
+int fposition = 0;
 
 
 
@@ -63,13 +67,13 @@ void MainMenu() {
         printf("4. Edit Student\n");
         printf("5. Delete Student\n");
         printf("6. Exit\n");
+		printf("7. show file data\n");
         printf("Select: ");
 
         scanf("%d", &key);
         ClearInput();
 
         switch (key) {
-
             case 1:
                 InsertStudent();
                 break;
@@ -89,11 +93,13 @@ void MainMenu() {
             case 5:
                 DeleteStudent();
                 break;
+			
+			case 6:
+				LoadData();
 
-            case 6:
+            case 7:
                 ExitProgram();
                 return;
-
             default:
                 printf("Invalid option!\n");
         }
@@ -305,8 +311,7 @@ void DeleteStudent() {
 
         for (int j = 0; j < number_of_lessons; j++) {
 
-            student_lessons[i][j] =
-            student_lessons[i + 1][j];
+            student_lessons[i][j] = student_lessons[i + 1][j];
         }
     }
 
@@ -324,6 +329,8 @@ void ExitProgram() {
     printf("\n==============================\n");
 }
 
-void SaveData(){
-	
+void LoadData(){
+	fptr_fwrite = fopen("Database.txt","r");
+	f_count_lesson = fscanf(fptr_fwrite);
+	fclose(fptr_fwrite);
 }
