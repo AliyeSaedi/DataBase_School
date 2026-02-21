@@ -53,13 +53,6 @@ void ClearInput() {
 void MainMenu() {
 
     int key;
-	
-	// نمایش تیتر برنامه در فایل
-	fptr_fwrite = fopen("Database.txt","w");
-	fprintf(fptr_fwrite,"\t\tW E L C O M E\n");
-	fprintf(fptr_fwrite,"-------------------------------------\n");
-	fprintf(fptr_fwrite,"\tDataBase School\n\n");
-	fclose(fptr_fwrite);
 
     while (1) {
 
@@ -115,12 +108,7 @@ void InsertStudent() {
 
     printf("\nHow many students? ");
     scanf("%d", &count);
-	
-	// ثبت تعداد دانش آموزان در فایل
-	fptr_fwrite = fopen("Database.txt","a");
-	fprintf(fptr_fwrite,"Number of students: %d\n",count);
-	fclose(fptr_fwrite);
-	
+
     ClearInput();
 
     if (number_of_students + count > MAX_STUDENTS) {
@@ -141,8 +129,12 @@ void InsertStudent() {
 
         number_of_students++;
     }
-
     printf("Students added successfully!\n");
+	
+	// ثبت تعداد دانش آموزان در فایل
+	fptr_fwrite = fopen("Database.txt","a");
+	fprintf(fptr_fwrite,"%d\n",count);
+	fclose(fptr_fwrite);
 }
 
 
@@ -158,12 +150,17 @@ void InsertCourses() {
 
         printf("How many lessons? ");
         scanf("%d", &number_of_lessons);
-
+		
         if (number_of_lessons > MAX_LESSONS) {
             number_of_lessons = 0;
             printf("Too many lessons!\n");
             return;
         }
+		
+		//نوشتن تعداد دروس دانش آموز در فایل
+		fptr_fwrite = fopen("database.txt","a");
+		fprintf(fptr_fwrite,"%d\n",number_of_lessons);
+		fclose(fptr_fwrite);
     }
 
     for (int i = 0; i < number_of_students; i++) {
@@ -172,7 +169,7 @@ void InsertCourses() {
 		
 		// نمایش نام هر دانش آموز در فایل
 		fptr_fwrite = fopen("Database.txt","a");
-		fprintf(fptr_fwrite,"\nStudent %d : %s \t\t ",i,students_names[i]);
+		fprintf(fptr_fwrite,"%s\t ",students_names[i]);
 		fclose(fptr_fwrite);
 
         for (int j = 0; j < number_of_lessons; j++) {
@@ -182,9 +179,14 @@ void InsertCourses() {
 			
 			// نمایش نمرات هر دانش آموز در فایل
 			fptr_fwrite = fopen("Database.txt","a");
-			fprintf(fptr_fwrite,"%d, " ,student_lessons[i][j]);
+			fprintf(fptr_fwrite,"%d  " ,student_lessons[i][j]);
 			fclose(fptr_fwrite);
         }
+		
+		// رفتن به خط بعدی
+		fptr_fwrite = fopen("Database.txt","a");
+		fprintf(fptr_fwrite,"\n");
+		fclose(fptr_fwrite);
     }
 
     ClearInput();
@@ -247,9 +249,7 @@ void EditStudent() {
 
     /* تغییر نام */
     printf("New name: ");
-    fgets(students_names[index],
-          MAX_DATA_LENGTH,
-          stdin);
+    fgets(students_names[index],MAX_DATA_LENGTH,stdin);
 
     students_names[index]
     [strcspn(students_names[index], "\n")] = '\0';

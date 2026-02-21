@@ -1,6 +1,6 @@
+4
 2
-2
-majid
-11 22
-nima
-33 44
+nima	 12  10  
+majid	 3  12  
+mahsa	 20  19  
+hasan	 2  1  
