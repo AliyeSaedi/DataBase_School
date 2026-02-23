@@ -5,35 +5,28 @@
 #define MAX_STUDENTS 100
 #define MAX_LESSONS 20
 
-
 char students_names[MAX_STUDENTS][MAX_DATA_LENGTH];
 int student_lessons[MAX_STUDENTS][MAX_LESSONS];
 
 int number_of_students = 0;
 int number_of_lessons = 0;
 
-//functions
+// functions
 void MainMenu();
-
 void InsertStudent();
 void InsertCourses();
-
 void ShowData();
-
 void EditStudent();
 void DeleteStudent();
-
 void ClearInput();
 void ExitProgram();
-
 void LoadData();
+void SaveData();
 
-//manage file
-FILE *fptr_fwrite;
-int f_count_lesson, f_count_student;
-int fposition = 0;
-
-
+/* پاک کردن بافر ورودی */
+void ClearInput() {
+    while (getchar() != '\n');
+}
 
 int main() {
 
@@ -41,17 +34,11 @@ int main() {
     printf("\n   School Database System");
     printf("\n==============================\n");
 
+    LoadData();   // لود اطلاعات در شروع برنامه
     MainMenu();
 
     return 0;
 }
-
-
-/* پاک کردن بافر ورودی */
-void ClearInput() {
-    while (getchar() != '\n');
-}
-
 
 /* منوی اصلی */
 void MainMenu() {
@@ -67,13 +54,13 @@ void MainMenu() {
         printf("4. Edit Student\n");
         printf("5. Delete Student\n");
         printf("6. Exit\n");
-		printf("7. show file data\n");
         printf("Select: ");
 
         scanf("%d", &key);
         ClearInput();
 
         switch (key) {
+
             case 1:
                 InsertStudent();
                 break;
@@ -93,19 +80,17 @@ void MainMenu() {
             case 5:
                 DeleteStudent();
                 break;
-			
-			case 6:
-				LoadData();
 
-            case 7:
+            case 6:
+                SaveData();
                 ExitProgram();
                 return;
+
             default:
                 printf("Invalid option!\n");
         }
     }
 }
-
 
 /* افزودن دانش آموز */
 void InsertStudent() {
@@ -114,7 +99,6 @@ void InsertStudent() {
 
     printf("\nHow many students? ");
     scanf("%d", &count);
-
     ClearInput();
 
     if (number_of_students + count > MAX_STUDENTS) {
@@ -124,8 +108,8 @@ void InsertStudent() {
 
     for (int i = 0; i < count; i++) {
 
-        printf("Enter name for student %d: ",
-               number_of_students + 1);
+        printf("Enter name for student %d: ", number_of_students + 1);
+
         fgets(students_names[number_of_students],
               MAX_DATA_LENGTH,
               stdin);
@@ -135,14 +119,9 @@ void InsertStudent() {
 
         number_of_students++;
     }
-    printf("Students added successfully!\n");
-	
-	// ثبت تعداد دانش آموزان در فایل
-	fptr_fwrite = fopen("Database.txt","a");
-	fprintf(fptr_fwrite,"%d\n",count);
-	fclose(fptr_fwrite);
-}
 
+    printf("Students added successfully!\n");
+}
 
 /* افزودن نمرات */
 void InsertCourses() {
@@ -156,49 +135,28 @@ void InsertCourses() {
 
         printf("How many lessons? ");
         scanf("%d", &number_of_lessons);
-		
-        if (number_of_lessons > MAX_LESSONS) {
+
+        if (number_of_lessons > MAX_LESSONS || number_of_lessons <= 0) {
             number_of_lessons = 0;
-            printf("Too many lessons!\n");
+            printf("Invalid number of lessons!\n");
             return;
         }
-		
-		//نوشتن تعداد دروس دانش آموز در فایل
-		fptr_fwrite = fopen("database.txt","a");
-		fprintf(fptr_fwrite,"%d\n",number_of_lessons);
-		fclose(fptr_fwrite);
     }
 
     for (int i = 0; i < number_of_students; i++) {
 
-        printf("\nStudent: %s\n",students_names[i]);
-		
-		// نمایش نام هر دانش آموز در فایل
-		fptr_fwrite = fopen("Database.txt","a");
-		fprintf(fptr_fwrite,"%s\t ",students_names[i]);
-		fclose(fptr_fwrite);
+        printf("\nStudent: %s\n", students_names[i]);
 
         for (int j = 0; j < number_of_lessons; j++) {
 
             printf("Lesson %d: ", j + 1);
             scanf("%d", &student_lessons[i][j]);
-			
-			// نمایش نمرات هر دانش آموز در فایل
-			fptr_fwrite = fopen("Database.txt","a");
-			fprintf(fptr_fwrite,"%d  " ,student_lessons[i][j]);
-			fclose(fptr_fwrite);
         }
-		
-		// رفتن به خط بعدی
-		fptr_fwrite = fopen("Database.txt","a");
-		fprintf(fptr_fwrite,"\n");
-		fclose(fptr_fwrite);
     }
 
     ClearInput();
     printf("Courses saved!\n");
 }
-
 
 /* نمایش اطلاعات */
 void ShowData() {
@@ -212,8 +170,7 @@ void ShowData() {
 
     for (int i = 0; i < number_of_students; i++) {
 
-        printf("\n%d. %s\n", i + 1,
-               students_names[i]);
+        printf("\n%d. %s\n", i + 1, students_names[i]);
 
         if (number_of_lessons > 0) {
 
@@ -227,7 +184,6 @@ void ShowData() {
         }
     }
 }
-
 
 /* ویرایش دانش آموز */
 void EditStudent() {
@@ -252,16 +208,12 @@ void EditStudent() {
         return;
     }
 
-
-    /* تغییر نام */
     printf("New name: ");
-    fgets(students_names[index],MAX_DATA_LENGTH,stdin);
+    fgets(students_names[index], MAX_DATA_LENGTH, stdin);
 
     students_names[index]
     [strcspn(students_names[index], "\n")] = '\0';
 
-
-    /* تغییر نمرات */
     if (number_of_lessons > 0) {
 
         printf("Enter new grades:\n");
@@ -277,7 +229,6 @@ void EditStudent() {
 
     printf("Student updated!\n");
 }
-
 
 /* حذف دانش آموز */
 void DeleteStudent() {
@@ -302,15 +253,11 @@ void DeleteStudent() {
         return;
     }
 
-
-    /* شیفت دادن آرایه */
     for (int i = index; i < number_of_students - 1; i++) {
 
-        strcpy(students_names[i],
-               students_names[i + 1]);
+        strcpy(students_names[i], students_names[i + 1]);
 
         for (int j = 0; j < number_of_lessons; j++) {
-
             student_lessons[i][j] = student_lessons[i + 1][j];
         }
     }
@@ -320,6 +267,56 @@ void DeleteStudent() {
     printf("Student deleted!\n");
 }
 
+/* ذخیره اطلاعات در فایل */
+void SaveData() {
+
+    FILE *fptr = fopen("Database.txt", "w");
+
+    if (fptr == NULL) {
+        printf("Error saving file!\n");
+        return;
+    }
+
+    fprintf(fptr, "%d\n", number_of_students);
+    fprintf(fptr, "%d\n", number_of_lessons);
+
+    for (int i = 0; i < number_of_students; i++) {
+
+        fprintf(fptr, "%s ", students_names[i]);
+
+        for (int j = 0; j < number_of_lessons; j++) {
+            fprintf(fptr, "%d ", student_lessons[i][j]);
+        }
+
+        fprintf(fptr, "\n");
+    }
+
+    fclose(fptr);
+}
+
+/* خواندن اطلاعات از فایل */
+void LoadData() {
+
+    FILE *fptr = fopen("Database.txt", "r");
+
+    if (fptr == NULL) {
+        return;  // اگر فایل نبود، بی‌صدا ادامه بده
+    }
+
+    fscanf(fptr, "%d", &number_of_students);
+    fscanf(fptr, "%d", &number_of_lessons);
+
+    for (int i = 0; i < number_of_students; i++) {
+
+        fscanf(fptr, "%s", students_names[i]);
+
+        for (int j = 0; j < number_of_lessons; j++) {
+            fscanf(fptr, "%d", &student_lessons[i][j]);
+        }
+    }
+
+    fclose(fptr);
+}
 
 /* خروج */
 void ExitProgram() {
@@ -327,10 +324,4 @@ void ExitProgram() {
     printf("\n==============================");
     printf("\n   Program Closed");
     printf("\n==============================\n");
-}
-
-void LoadData(){
-	fptr_fwrite = fopen("Database.txt","r");
-	f_count_lesson = fscanf(fptr_fwrite);
-	fclose(fptr_fwrite);
 }
