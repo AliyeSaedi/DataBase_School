@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define MAX_DATA_LENGTH 50
 #define MAX_STUDENTS 100
@@ -52,7 +53,7 @@ void MainMenu() {
         printf("3. Show Data\n");
         printf("4. Edit Student\n");
         printf("5. Delete Student\n");
-        printf("6. Exit\n");
+        printf("6. Exit & SAVE\n");
         printf("Select: ");
 
         scanf("%d", &key);
@@ -84,7 +85,6 @@ void InsertStudent() {
     }
 
     for (int i = 0; i < count; i++) {
-
         printf("Enter name for student %d: ", number_of_students + 1);
         fgets(students_names[number_of_students], MAX_DATA_LENGTH, stdin);
         students_names[number_of_students][strcspn(students_names[number_of_students], "\n")] = '\0';
@@ -97,13 +97,18 @@ void InsertStudent() {
         scanf("%d", &academic_years[number_of_students]);
         ClearInput();
 
+        // مقداردهی اولیه نمرات به -1 یعنی خالی
+        for (int j = 0; j < MAX_LESSONS; j++)
+            student_lessons[number_of_students][j] = -1;
+
         number_of_students++;
     }
 
+    SaveData();  // ذخیره خودکار بعد از اضافه کردن
     printf("Students added successfully!\n");
 }
 
-/* افزودن نمرات */
+/* افزودن نمرات فقط برای دانش آموزانی که نمره ندارند */
 void InsertCourses() {
     if (number_of_students == 0) {
         printf("No students yet!\n");
@@ -125,12 +130,15 @@ void InsertCourses() {
         printf("\nStudent: %s\n", students_names[i]);
 
         for (int j = 0; j < number_of_lessons; j++) {
-            printf("Lesson %d: ", j + 1);
-            scanf("%d", &student_lessons[i][j]);
+            if (student_lessons[i][j] == -1) { // فقط نمره خالی
+                printf("Enter grade for Lesson %d: ", j + 1);
+                scanf("%d", &student_lessons[i][j]);
+            }
         }
     }
 
     ClearInput();
+    SaveData();  // ذخیره خودکار بعد از افزودن نمرات
     printf("Courses saved!\n");
 }
 
@@ -150,8 +158,12 @@ void ShowData() {
 
         if (number_of_lessons > 0) {
             printf("Grades: ");
-            for (int j = 0; j < number_of_lessons; j++)
-                printf("%d ", student_lessons[i][j]);
+            for (int j = 0; j < number_of_lessons; j++) {
+                if (student_lessons[i][j] != -1)
+                    printf("%d ", student_lessons[i][j]);
+                else
+                    printf("_ "); // نمره خالی
+            }
             printf("\n");
         }
     }
@@ -192,14 +204,21 @@ void EditStudent() {
     ClearInput();
 
     if (number_of_lessons > 0) {
-        printf("Enter new grades:\n");
+        printf("Enter new grades (only if you want to change):\n");
         for (int j = 0; j < number_of_lessons; j++) {
-            printf("Lesson %d: ", j + 1);
-            scanf("%d", &student_lessons[index][j]);
+            printf("Lesson %d (current: %s): ", j + 1, 
+                   student_lessons[index][j] == -1 ? "none" : 
+                   (char[10]){0});
+            if (student_lessons[index][j] != -1)
+                printf("%d", student_lessons[index][j]);
+            int temp;
+            if (scanf("%d", &temp) == 1)
+                student_lessons[index][j] = temp;
+            ClearInput();
         }
-        ClearInput();
     }
 
+    SaveData();  // ذخیره خودکار بعد از ویرایش
     printf("Student updated!\n");
 }
 
@@ -234,6 +253,7 @@ void DeleteStudent() {
     }
 
     number_of_students--;
+    SaveData();  // ذخیره خودکار بعد از حذف
     printf("Student deleted!\n");
 }
 
@@ -262,16 +282,32 @@ void SaveData() {
 /* خواندن اطلاعات از فایل */
 void LoadData() {
     FILE *fptr = fopen("Database.txt", "r");
-
     if (fptr == NULL) return;
 
-    fscanf(fptr, "%d", &number_of_students);
-    fscanf(fptr, "%d", &number_of_lessons);
+    char line[512];
+
+    if (fgets(line, sizeof(line), fptr)) sscanf(line, "%d", &number_of_students);
+    if (fgets(line, sizeof(line), fptr)) sscanf(line, "%d", &number_of_lessons);
 
     for (int i = 0; i < number_of_students; i++) {
-        fscanf(fptr, "%s %s %d", students_names[i], student_ids[i], &academic_years[i]);
-        for (int j = 0; j < number_of_lessons; j++)
-            fscanf(fptr, "%d", &student_lessons[i][j]);
+        if (fgets(line, sizeof(line), fptr)) {
+            char *token = strtok(line, " \n");
+            if (token) strcpy(students_names[i], token);
+
+            token = strtok(NULL, " \n");
+            if (token) strcpy(student_ids[i], token);
+
+            token = strtok(NULL, " \n");
+            if (token) academic_years[i] = atoi(token);
+
+            for (int j = 0; j < number_of_lessons; j++) {
+                token = strtok(NULL, " \n");
+                if (token)
+                    student_lessons[i][j] = atoi(token);
+                else
+                    student_lessons[i][j] = -1; // نمره خالی
+            }
+        }
     }
 
     fclose(fptr);
