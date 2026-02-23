@@ -6,6 +6,8 @@
 #define MAX_LESSONS 20
 
 char students_names[MAX_STUDENTS][MAX_DATA_LENGTH];
+char student_ids[MAX_STUDENTS][20];
+int academic_years[MAX_STUDENTS];
 int student_lessons[MAX_STUDENTS][MAX_LESSONS];
 
 int number_of_students = 0;
@@ -29,7 +31,6 @@ void ClearInput() {
 }
 
 int main() {
-
     printf("\n==============================");
     printf("\n   School Database System");
     printf("\n==============================\n");
@@ -42,11 +43,9 @@ int main() {
 
 /* منوی اصلی */
 void MainMenu() {
-
     int key;
 
     while (1) {
-
         printf("\n=========== MAIN MENU ===========\n");
         printf("1. Insert Student\n");
         printf("2. Insert Courses\n");
@@ -60,41 +59,19 @@ void MainMenu() {
         ClearInput();
 
         switch (key) {
-
-            case 1:
-                InsertStudent();
-                break;
-
-            case 2:
-                InsertCourses();
-                break;
-
-            case 3:
-                ShowData();
-                break;
-
-            case 4:
-                EditStudent();
-                break;
-
-            case 5:
-                DeleteStudent();
-                break;
-
-            case 6:
-                SaveData();
-                ExitProgram();
-                return;
-
-            default:
-                printf("Invalid option!\n");
+            case 1: InsertStudent(); break;
+            case 2: InsertCourses(); break;
+            case 3: ShowData(); break;
+            case 4: EditStudent(); break;
+            case 5: DeleteStudent(); break;
+            case 6: SaveData(); ExitProgram(); return;
+            default: printf("Invalid option!\n");
         }
     }
 }
 
 /* افزودن دانش آموز */
 void InsertStudent() {
-
     int count;
 
     printf("\nHow many students? ");
@@ -109,13 +86,16 @@ void InsertStudent() {
     for (int i = 0; i < count; i++) {
 
         printf("Enter name for student %d: ", number_of_students + 1);
+        fgets(students_names[number_of_students], MAX_DATA_LENGTH, stdin);
+        students_names[number_of_students][strcspn(students_names[number_of_students], "\n")] = '\0';
 
-        fgets(students_names[number_of_students],
-              MAX_DATA_LENGTH,
-              stdin);
+        printf("Enter student ID: ");
+        fgets(student_ids[number_of_students], 20, stdin);
+        student_ids[number_of_students][strcspn(student_ids[number_of_students], "\n")] = '\0';
 
-        students_names[number_of_students]
-        [strcspn(students_names[number_of_students], "\n")] = '\0';
+        printf("Enter academic year: ");
+        scanf("%d", &academic_years[number_of_students]);
+        ClearInput();
 
         number_of_students++;
     }
@@ -125,14 +105,12 @@ void InsertStudent() {
 
 /* افزودن نمرات */
 void InsertCourses() {
-
     if (number_of_students == 0) {
         printf("No students yet!\n");
         return;
     }
 
     if (number_of_lessons == 0) {
-
         printf("How many lessons? ");
         scanf("%d", &number_of_lessons);
 
@@ -144,11 +122,9 @@ void InsertCourses() {
     }
 
     for (int i = 0; i < number_of_students; i++) {
-
         printf("\nStudent: %s\n", students_names[i]);
 
         for (int j = 0; j < number_of_lessons; j++) {
-
             printf("Lesson %d: ", j + 1);
             scanf("%d", &student_lessons[i][j]);
         }
@@ -160,7 +136,6 @@ void InsertCourses() {
 
 /* نمایش اطلاعات */
 void ShowData() {
-
     if (number_of_students == 0) {
         printf("No data available!\n");
         return;
@@ -169,17 +144,14 @@ void ShowData() {
     printf("\n=========== STUDENTS DATA ===========\n");
 
     for (int i = 0; i < number_of_students; i++) {
-
         printf("\n%d. %s\n", i + 1, students_names[i]);
+        printf("ID: %s\n", student_ids[i]);
+        printf("Year: %d\n", academic_years[i]);
 
         if (number_of_lessons > 0) {
-
             printf("Grades: ");
-
-            for (int j = 0; j < number_of_lessons; j++) {
+            for (int j = 0; j < number_of_lessons; j++)
                 printf("%d ", student_lessons[i][j]);
-            }
-
             printf("\n");
         }
     }
@@ -187,7 +159,6 @@ void ShowData() {
 
 /* ویرایش دانش آموز */
 void EditStudent() {
-
     int index;
 
     if (number_of_students == 0) {
@@ -210,20 +181,22 @@ void EditStudent() {
 
     printf("New name: ");
     fgets(students_names[index], MAX_DATA_LENGTH, stdin);
+    students_names[index][strcspn(students_names[index], "\n")] = '\0';
 
-    students_names[index]
-    [strcspn(students_names[index], "\n")] = '\0';
+    printf("New student ID: ");
+    fgets(student_ids[index], 20, stdin);
+    student_ids[index][strcspn(student_ids[index], "\n")] = '\0';
+
+    printf("New academic year: ");
+    scanf("%d", &academic_years[index]);
+    ClearInput();
 
     if (number_of_lessons > 0) {
-
         printf("Enter new grades:\n");
-
         for (int j = 0; j < number_of_lessons; j++) {
-
             printf("Lesson %d: ", j + 1);
             scanf("%d", &student_lessons[index][j]);
         }
-
         ClearInput();
     }
 
@@ -232,7 +205,6 @@ void EditStudent() {
 
 /* حذف دانش آموز */
 void DeleteStudent() {
-
     int index;
 
     if (number_of_students == 0) {
@@ -254,22 +226,19 @@ void DeleteStudent() {
     }
 
     for (int i = index; i < number_of_students - 1; i++) {
-
         strcpy(students_names[i], students_names[i + 1]);
-
-        for (int j = 0; j < number_of_lessons; j++) {
+        strcpy(student_ids[i], student_ids[i + 1]);
+        academic_years[i] = academic_years[i + 1];
+        for (int j = 0; j < number_of_lessons; j++)
             student_lessons[i][j] = student_lessons[i + 1][j];
-        }
     }
 
     number_of_students--;
-
     printf("Student deleted!\n");
 }
 
 /* ذخیره اطلاعات در فایل */
 void SaveData() {
-
     FILE *fptr = fopen("Database.txt", "w");
 
     if (fptr == NULL) {
@@ -281,13 +250,9 @@ void SaveData() {
     fprintf(fptr, "%d\n", number_of_lessons);
 
     for (int i = 0; i < number_of_students; i++) {
-
-        fprintf(fptr, "%s ", students_names[i]);
-
-        for (int j = 0; j < number_of_lessons; j++) {
+        fprintf(fptr, "%s %s %d ", students_names[i], student_ids[i], academic_years[i]);
+        for (int j = 0; j < number_of_lessons; j++)
             fprintf(fptr, "%d ", student_lessons[i][j]);
-        }
-
         fprintf(fptr, "\n");
     }
 
@@ -296,23 +261,17 @@ void SaveData() {
 
 /* خواندن اطلاعات از فایل */
 void LoadData() {
-
     FILE *fptr = fopen("Database.txt", "r");
 
-    if (fptr == NULL) {
-        return;  // اگر فایل نبود، بی‌صدا ادامه بده
-    }
+    if (fptr == NULL) return;
 
     fscanf(fptr, "%d", &number_of_students);
     fscanf(fptr, "%d", &number_of_lessons);
 
     for (int i = 0; i < number_of_students; i++) {
-
-        fscanf(fptr, "%s", students_names[i]);
-
-        for (int j = 0; j < number_of_lessons; j++) {
+        fscanf(fptr, "%s %s %d", students_names[i], student_ids[i], &academic_years[i]);
+        for (int j = 0; j < number_of_lessons; j++)
             fscanf(fptr, "%d", &student_lessons[i][j]);
-        }
     }
 
     fclose(fptr);
@@ -320,7 +279,6 @@ void LoadData() {
 
 /* خروج */
 void ExitProgram() {
-
     printf("\n==============================");
     printf("\n   Program Closed");
     printf("\n==============================\n");
