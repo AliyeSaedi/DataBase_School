@@ -14,7 +14,7 @@ int student_lessons[MAX_STUDENTS][MAX_LESSONS];
 int number_of_students = 0;
 int number_of_lessons = 0;
 
-// functions
+
 void MainMenu();
 void InsertStudent();
 void InsertCourses();
@@ -26,7 +26,7 @@ void ExitProgram();
 void LoadData();
 void SaveData();
 
-/* پاک کردن بافر ورودی */
+
 void ClearInput() {
     while (getchar() != '\n');
 }
@@ -36,13 +36,13 @@ int main() {
     printf("\n   School Database System");
     printf("\n==============================\n");
 
-    LoadData();   // لود اطلاعات در شروع برنامه
+    LoadData();   
     MainMenu();
 
     return 0;
 }
 
-/* منوی اصلی */
+
 void MainMenu() {
     int key;
 
@@ -71,7 +71,7 @@ void MainMenu() {
     }
 }
 
-/* افزودن دانش آموز */
+
 void InsertStudent() {
     int count;
 
@@ -97,18 +97,18 @@ void InsertStudent() {
         scanf("%d", &academic_years[number_of_students]);
         ClearInput();
 
-        // مقداردهی اولیه نمرات به -1 یعنی خالی
+        
         for (int j = 0; j < MAX_LESSONS; j++)
             student_lessons[number_of_students][j] = -1;
 
         number_of_students++;
     }
 
-    SaveData();  // ذخیره خودکار بعد از اضافه کردن
+    SaveData();  
     printf("Students added successfully!\n");
 }
 
-/* افزودن نمرات فقط برای دانش آموزانی که نمره ندارند */
+
 void InsertCourses() {
     if (number_of_students == 0) {
         printf("No students yet!\n");
@@ -130,7 +130,7 @@ void InsertCourses() {
         printf("\nStudent: %s\n", students_names[i]);
 
         for (int j = 0; j < number_of_lessons; j++) {
-            if (student_lessons[i][j] == -1) { // فقط نمره خالی
+            if (student_lessons[i][j] == -1) {
                 printf("Enter grade for Lesson %d: ", j + 1);
                 scanf("%d", &student_lessons[i][j]);
             }
@@ -138,11 +138,11 @@ void InsertCourses() {
     }
 
     ClearInput();
-    SaveData();  // ذخیره خودکار بعد از افزودن نمرات
+    SaveData();
     printf("Courses saved!\n");
 }
 
-/* نمایش اطلاعات */
+
 void ShowData() {
     if (number_of_students == 0) {
         printf("No data available!\n");
@@ -169,7 +169,7 @@ void ShowData() {
     }
 }
 
-/* ویرایش دانش آموز */
+
 void EditStudent() {
     int index;
 
@@ -218,11 +218,11 @@ void EditStudent() {
         }
     }
 
-    SaveData();  // ذخیره خودکار بعد از ویرایش
+    SaveData();
     printf("Student updated!\n");
 }
 
-/* حذف دانش آموز */
+
 void DeleteStudent() {
     int index;
 
@@ -253,11 +253,10 @@ void DeleteStudent() {
     }
 
     number_of_students--;
-    SaveData();  // ذخیره خودکار بعد از حذف
+    SaveData();
     printf("Student deleted!\n");
 }
 
-/* ذخیره اطلاعات در فایل */
 void SaveData() {
     FILE *fptr = fopen("Database.txt", "w");
 
@@ -279,41 +278,32 @@ void SaveData() {
     fclose(fptr);
 }
 
-/* خواندن اطلاعات از فایل */
 void LoadData() {
-    FILE *fptr = fopen("Database.txt", "r");
-    if (fptr == NULL) return;
 
-    char line[512];
+    FILE *fptr;
+    fptr = fopen("Database.txt", "r");
 
-    if (fgets(line, sizeof(line), fptr)) sscanf(line, "%d", &number_of_students);
-    if (fgets(line, sizeof(line), fptr)) sscanf(line, "%d", &number_of_lessons);
+    if (fptr == NULL) {
+        return;
+    }
+
+    fscanf(fptr, "%d", &number_of_students);
+    fscanf(fptr, "%d", &number_of_lessons);
 
     for (int i = 0; i < number_of_students; i++) {
-        if (fgets(line, sizeof(line), fptr)) {
-            char *token = strtok(line, " \n");
-            if (token) strcpy(students_names[i], token);
 
-            token = strtok(NULL, " \n");
-            if (token) strcpy(student_ids[i], token);
+        fscanf(fptr, "%s", students_names[i]);
+        fscanf(fptr, "%s", student_ids[i]);
+        fscanf(fptr, "%d", &academic_years[i]);
 
-            token = strtok(NULL, " \n");
-            if (token) academic_years[i] = atoi(token);
-
-            for (int j = 0; j < number_of_lessons; j++) {
-                token = strtok(NULL, " \n");
-                if (token)
-                    student_lessons[i][j] = atoi(token);
-                else
-                    student_lessons[i][j] = -1; // نمره خالی
-            }
+        for (int j = 0; j < number_of_lessons; j++) {
+            fscanf(fptr, "%d", &student_lessons[i][j]);
         }
     }
 
     fclose(fptr);
 }
 
-/* خروج */
 void ExitProgram() {
     printf("\n==============================");
     printf("\n   Program Closed");
