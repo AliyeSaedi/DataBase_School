@@ -169,7 +169,6 @@ void ShowData() {
     }
 }
 
-
 void EditStudent() {
     int index;
 
@@ -180,40 +179,33 @@ void EditStudent() {
 
     ShowData();
 
-    printf("\nSelect student number: ");
+    printf("\nEnter student number to edit: ");
     scanf("%d", &index);
     ClearInput();
-
-    index--;
+    index--; 
 
     if (index < 0 || index >= number_of_students) {
-        printf("Invalid student!\n");
+        printf("Invalid student number!\n");
         return;
     }
 
-    printf("New name: ");
+    printf("Enter new name: ");
     fgets(students_names[index], MAX_DATA_LENGTH, stdin);
     students_names[index][strcspn(students_names[index], "\n")] = '\0';
 
-    printf("New student ID: ");
+    printf("Enter new student ID: ");
     fgets(student_ids[index], 20, stdin);
     student_ids[index][strcspn(student_ids[index], "\n")] = '\0';
 
-    printf("New academic year: ");
+    printf("Enter new academic year: ");
     scanf("%d", &academic_years[index]);
     ClearInput();
 
     if (number_of_lessons > 0) {
-        printf("Enter new grades (only if you want to change):\n");
+        printf("Enter new grades:\n");
         for (int j = 0; j < number_of_lessons; j++) {
-            printf("Lesson %d (current: %s): ", j + 1, 
-                   student_lessons[index][j] == -1 ? "none" : 
-                   (char[10]){0});
-            if (student_lessons[index][j] != -1)
-                printf("%d", student_lessons[index][j]);
-            int temp;
-            if (scanf("%d", &temp) == 1)
-                student_lessons[index][j] = temp;
+            printf("Lesson %d: ", j + 1);
+            scanf("%d", &student_lessons[index][j]);
             ClearInput();
         }
     }
@@ -221,7 +213,6 @@ void EditStudent() {
     SaveData();
     printf("Student updated!\n");
 }
-
 
 void DeleteStudent() {
     int index;
